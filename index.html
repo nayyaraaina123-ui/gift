@@ -23,7 +23,7 @@ html,body{
   background:var(--dark);
   color:#fff;
   overflow-x:hidden;
-  touch-action:pan-y; /* hanya scroll vertikal, swipe horizontal diblokir */
+  touch-action:pan-y;
 }
 
 #stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -227,58 +227,26 @@ html,body{
   .letter.fullLetter{width:82vw !important;height:52vh !important}
 }
 
-/* ─────────────────────────────────────
-   PAGE 4 — QUESTION (FIXED NO BUTTON)
-───────────────────────────────────── */
+/* PAGE 4 */
 #pg-q h1{
   font-size:1.4rem;text-align:center;line-height:1.55;
   margin-bottom:36px;z-index:1;position:relative;
   animation:float 3s ease-in-out infinite;
 }
-
-/* Container tombol — lebar tetap, tidak berubah */
 .qbtns{
-  display:flex;
-  gap:16px;
-  z-index:1;
-  position:relative;
-  width:100%;
-  max-width:200px;
+  display:flex;gap:16px;z-index:1;position:relative;
+  width:100%;max-width:200px;
 }
-
-/* Wrapper kanan — posisi relative, overflow visible */
-.no-wrapper{
-  position:relative;
-  width:50%;
-  /* tidak boleh ada transform atau margin yang berubah */
-}
-
-/* Hint bubble muncul di atas wrapper, bukan di atas btn */
+.no-wrapper{position:relative;width:50%;}
 .hint-bubble{
-  position:absolute;
-  top:-44px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(96,165,250,.12);
-  border:1px solid var(--gb);
-  padding:6px 13px;
-  border-radius:10px;
-  font-size:10px;
-  white-space:nowrap;
-  opacity:0;
-  transition:.4s;
-  pointer-events:none;
+  position:absolute;top:-44px;left:50%;transform:translateX(-50%);
+  background:rgba(96,165,250,.12);border:1px solid var(--gb);
+  padding:6px 13px;border-radius:10px;font-size:10px;
+  white-space:nowrap;opacity:0;transition:.4s;pointer-events:none;
 }
 .hint-bubble.on{opacity:1}
-
-/* Tombol No — DIAM di tempat, hanya shake visual */
-#no-btn{
-  width:100%;
-  /* Tidak ada transform yang menggeser posisi */
-}
-#no-btn.shake-no{
-  animation:shakeNo .4s ease;
-}
+#no-btn{width:100%;}
+#no-btn.shake-no{animation:shakeNo .4s ease;}
 @keyframes shakeNo{
   0%,100%{transform:none}
   20%{transform:rotate(-4deg)}
@@ -320,20 +288,18 @@ html,body{
 .ending.on{opacity:1;pointer-events:all}
 #type-txt{font-size:1.15rem;max-width:300px;line-height:1.65}
 
-/* ─────────────────────────────────────
-   PAGE 6 — MEMORIES (FIXED SLIDER NAV)
-───────────────────────────────────── */
+/* PAGE 6 */
 #pg-mem{
   display:none;min-height:100vh;
   flex-direction:column;align-items:center;
   padding:0;background:var(--dark2);overflow-y:auto;
+   overflow-x: hidden;
+  touch-action: pan-y;
 }
 #pg-mem.active{display:flex}
-
 .mem-hdr{width:100%;text-align:center;padding:20px 16px 8px;position:relative;z-index:20}
 .mem-hdr h1{font-size:1.3rem;margin-bottom:4px}
 .mem-hdr p{font-size:12px;color:rgba(255,255,255,.4)}
-
 .hero-section{
   position:relative;width:100%;
   display:flex;justify-content:center;align-items:center;
@@ -342,8 +308,7 @@ html,body{
 .frame{
   display:flex;gap:14px;padding:18px;
   border-radius:18px;border:1px solid var(--gb);
-  background:rgba(96,165,250,.04);
-  position:relative;z-index:2;
+  background:rgba(96,165,250,.04);position:relative;z-index:2;
 }
 .mem-card{
   width:130px;height:175px;border-radius:14px;overflow:hidden;
@@ -355,230 +320,112 @@ html,body{
   position:absolute;inset:0;pointer-events:none;z-index:3;
   background:radial-gradient(
     circle at var(--sx,50%) var(--sy,50%),
-    transparent 0px,
-    transparent 0px,
-    rgba(4,16,30,.92) 110px
+    transparent 0px,transparent 0px,rgba(4,16,30,.92) 110px
   );
 }
-
 .glow-line{
   width:100%;height:1.5px;
   background:linear-gradient(90deg,transparent,var(--blue),transparent);
   box-shadow:0 0 12px var(--blue);
 }
-
-/* ── SLIDER: nav selalu di kiri-kanan kartu, tidak kemana-mana ── */
-.slider-section{
-  width:100%;
-  padding:28px 0 20px;
-  text-align:center;
-  perspective:1000px;
-}
+.slider-section{width:100%;padding:28px 0 20px;text-align:center;perspective:1000px;}
 .slider-section h2{font-size:1rem;margin-bottom:20px;color:#fff}
-
-/* Container utama slider */
-.slider-container{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:0; /* gap diatur lewat padding wrapper */
-}
-
-/* Wrapper kartu — ukuran tetap */
-.slider-wrapper{
-  position:relative;
-  /* lebar kartu ditentukan di sini, nav nempel di sisi ini */
-  width:200px;
-  height:280px;
-  flex-shrink:0;
-}
-
-/* Tombol nav — absolute terhadap slider-wrapper */
+.slider-container{display:flex;align-items:center;justify-content:center;gap:0;}
+.slider-wrapper{position:relative;width:200px;height:280px;flex-shrink:0;}
 .nav-btn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:10;
-  background:rgba(30,64,175,.6);
-  color:#93c5fd;
-  border:1px solid var(--gb);
-  font-size:22px;
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:.2s;
-  /* Keluar sedikit dari wrapper ke kiri/kanan */
-  margin:0;
+  position:absolute;top:50%;transform:translateY(-50%);z-index:10;
+  background:rgba(30,64,175,.6);color:#93c5fd;border:1px solid var(--gb);
+  font-size:22px;width:36px;height:36px;border-radius:50%;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:.2s;margin:0;
 }
 .nav-btn:hover{background:rgba(30,64,175,.9)}
-.nav-btn.prev{
-  left:-44px; /* di luar wrapper, sisi kiri */
-}
-.nav-btn.next{
-  right:-44px; /* di luar wrapper, sisi kanan */
-}
-
-/* Pada layar kecil — pastikan ada ruang untuk tombol */
+.nav-btn.prev{left:-44px;}
+.nav-btn.next{right:-44px;}
 @media(max-width:400px){
   .slider-wrapper{width:160px;height:240px}
   .nav-btn.prev{left:-38px}
   .nav-btn.next{right:-38px}
 }
-
-.slide{
-  position:absolute;top:0;left:50%;
-  transform:translateX(-50%);
-  width:100%;height:100%;
-  transition:.5s ease;opacity:0;
-}
+.slide{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;height:100%;transition:.5s ease;opacity:0;}
 .slide img{width:100%;height:80%;object-fit:cover;border-radius:16px;border:1px solid var(--gb)}
 .slide-ph{
-  width:100%;height:68%;border-radius:16px;
-  background:#0d2240;border:1px solid var(--gb);
+  width:100%;height:68%;border-radius:16px;background:#0d2240;border:1px solid var(--gb);
   display:flex;align-items:center;justify-content:center;font-size:40px;
 }
+.slider-container-wrap{padding:0 56px;display:flex;justify-content:center;}
+@media(max-width:600px){.mem-card{width:110px;height:150px}}
 
-/* Padding pada slider-container agar tombol tidak terpotong */
-.slider-container-wrap{
-  padding:0 56px; /* beri ruang untuk tombol di luar */
-  display:flex;
-  justify-content:center;
-}
-
-@media(max-width:600px){
-  .mem-card{width:110px;height:150px}
-}
-.mem-restart{margin:0 auto 40px;display:block;max-width:240px;position:relative;z-index:5}
-
-/* ── PHOTO CARDS SECTION ── */
-.photo-section{
-  width:100%;
-  padding:32px 0 20px;
-  text-align:center;
-  position:relative;
-  z-index:5;
-}
-.photo-section h2{
-  font-size:1rem;
-  margin-bottom:20px;
-  color:#fff;
-}
-.photo-grid{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
-  padding:0 24px;
-}
+/* PHOTO CARDS */
+.photo-section{width:100%;padding:32px 0 20px;text-align:center;position:relative;z-index:5;}
+.photo-section h2{font-size:1rem;margin-bottom:20px;color:#fff;}
+.photo-grid{display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 24px;}
 .photo-card{
-  width:100%;
-  max-width:320px;
-  aspect-ratio:1/1;
-  border-radius:18px;
-  border:1px solid var(--gb);
-  background:linear-gradient(135deg,#071526,#0d2e55);
-  overflow:hidden;
-  cursor:pointer;
-  position:relative;
-  transition:.3s;
+  width:100%;max-width:320px;aspect-ratio:1/1;border-radius:18px;
+  border:1px solid var(--gb);background:linear-gradient(135deg,#071526,#0d2e55);
+  overflow:hidden;cursor:pointer;position:relative;transition:.3s;
 }
-.photo-card:hover{
-  transform:scale(1.02);
-  border-color:var(--blue2);
-  box-shadow:0 0 20px rgba(96,165,250,.2);
-}
+.photo-card:hover{transform:scale(1.02);border-color:var(--blue2);box-shadow:0 0 20px rgba(96,165,250,.2);}
 .photo-card:active{transform:scale(.98)}
-.photo-card img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  transition:.3s;
-}
+.photo-card img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s;}
 .photo-card .card-overlay{
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   background:linear-gradient(to top,rgba(4,16,30,.7) 0%,transparent 50%);
-  display:flex;
-  align-items:flex-end;
-  padding:16px;
+  display:flex;align-items:flex-end;padding:16px;
 }
-.photo-card .card-label{
-  font-size:13px;
-  color:rgba(255,255,255,.7);
-  font-weight:600;
-  letter-spacing:.5px;
-}
+.photo-card .card-label{font-size:13px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.5px;}
 .card-ph{
-  width:100%;height:100%;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:8px;color:rgba(255,255,255,.3);
-  font-size:48px;
+  width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;color:rgba(255,255,255,.3);font-size:48px;
 }
 .card-ph span{font-size:13px;font-weight:500}
 
-/* ── PHOTO POPUP ── */
+/* PHOTO POPUP */
 #photo-popup{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  background:rgba(0,0,0,0);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  pointer-events:none;
-  transition:background .35s ease;
+  position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;pointer-events:none;transition:background .35s ease;
 }
-#photo-popup.on{
-  background:rgba(0,0,0,.92);
-  pointer-events:all;
-}
+#photo-popup.on{background:rgba(0,0,0,.92);pointer-events:all;}
 .popup-inner{
-  position:relative;
-  max-width:340px;
-  width:100%;
-  opacity:0;
-  transform:scale(.88) translateY(20px);
+  position:relative;max-width:340px;width:100%;
+  opacity:0;transform:scale(.88) translateY(20px);
   transition:.35s cubic-bezier(.34,1.56,.64,1);
 }
-#photo-popup.on .popup-inner{
-  opacity:1;
-  transform:scale(1) translateY(0);
-}
+#photo-popup.on .popup-inner{opacity:1;transform:scale(1) translateY(0);}
 .popup-img-wrap{
-  width:100%;
-  aspect-ratio:1/1;
-  border-radius:20px;
-  overflow:hidden;
-  border:1px solid var(--gb);
-  background:#0d2240;
+  width:100%;aspect-ratio:1/1;border-radius:20px;overflow:hidden;
+  border:1px solid var(--gb);background:#0d2240;
   display:flex;align-items:center;justify-content:center;font-size:60px;
 }
-.popup-img-wrap img{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
+.popup-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .popup-back-btn{
-  display:block;
-  width:100%;
-  margin-top:16px;
-  padding:13px;
-  border-radius:50px;
-  border:1px solid var(--gb);
-  background:rgba(96,165,250,.12);
-  color:#fff;
-  font-size:15px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
+  display:block;width:100%;margin-top:16px;padding:13px;border-radius:50px;
+  border:1px solid var(--gb);background:rgba(96,165,250,.12);
+  color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;
 }
 .popup-back-btn:hover{background:rgba(96,165,250,.22)}
 .popup-back-btn:active{transform:scale(.97)}
+
+/* TAP TO BEGIN */
+#intro{
+  position:fixed;inset:0;background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:999999;cursor:pointer;transition:opacity .8s ease;
+}
+#intro.fade{opacity:0;pointer-events:none}
+#intro-icon{font-size:56px;animation:float 3s ease-in-out infinite;margin-bottom:20px;}
+#intro h2{font-size:1.3rem;color:#fff;margin-bottom:8px;font-weight:600;}
+#intro p{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:32px;}
+#intro-tap{
+  padding:13px 36px;border-radius:50px;border:1px solid var(--gb);
+  background:rgba(96,165,250,.1);color:#fff;font-size:15px;font-weight:600;
+  animation:pulseBtn 2s ease-in-out infinite;
+}
+@keyframes pulseBtn{
+  0%,100%{box-shadow:0 0 0 0 rgba(96,165,250,.3)}
+  50%{box-shadow:0 0 0 10px rgba(96,165,250,0)}
+}
 </style>
 </head>
 <body>
@@ -586,10 +433,18 @@ html,body{
 <div id="stars"></div>
 <div id="dots"></div>
 
-<!-- MUSIK AUTOPLAY LOOP -->
+<!-- AUDIO -->
 <audio id="bg-music" loop preload="auto" style="display:none">
   <source src="music.mp3" type="audio/mpeg">
 </audio>
+
+<!-- TAP TO BEGIN -->
+<div id="intro" onclick="startExperience()">
+  <div id="intro-icon">💌</div>
+  <h2>For You</h2>
+  <p>Enjoy!...</p>
+  <div id="intro-tap">Tap to Begin ♪</div>
+</div>
 
 <!-- PAGE 1 — LOGIN -->
 <div class="page active" id="pg-login">
@@ -638,12 +493,11 @@ html,body{
   <button class="next-btn" id="next-btn" onclick="envNext()">Next ➜</button>
 </div>
 
-<!-- PAGE 4 — QUESTION (FIXED) -->
+<!-- PAGE 4 — QUESTION -->
 <div class="page" id="pg-q">
   <h1>Will you stay with me<br>forever? ❤︎</h1>
   <div class="qbtns">
     <button class="btn btn-blue" style="width:50%" onclick="goTo('pg-mem');initMem()">Yes</button>
-    <!-- Wrapper No: diam, hanya bubble yang bergerak -->
     <div class="no-wrapper">
       <div class="hint-bubble" id="no-hint">Jangan... 🥺</div>
       <button class="btn" id="no-btn" onclick="pressNo()">No</button>
@@ -669,14 +523,13 @@ html,body{
   </div>
 </div>
 
-<!-- PAGE 6 — MEMORIES (FIXED SLIDER) -->
+<!-- PAGE 6 — MEMORIES -->
 <div class="page" id="pg-mem">
   <div class="mem-hdr">
     <h1>Our Memories </h1>
     <p>Move to reveal</p>
   </div>
 
-  <!-- HERO SPOTLIGHT -->
   <div class="hero-section" id="hero-sec">
     <div class="frame">
       <div class="mem-card">
@@ -691,18 +544,13 @@ html,body{
 
   <div class="glow-line"></div>
 
-  <!-- 3D SLIDER — tombol prev/next SELALU nempel di sisi kartu -->
   <div class="slider-section">
     <h2>We keep this love in photograph</h2>
     <div class="slider-container-wrap">
       <div class="slider-container">
-        <!-- Wrapper relatif — tombol nav absolute di dalamnya -->
         <div class="slider-wrapper" id="sw">
-          <!-- Tombol PREV — absolute kiri -->
           <button class="nav-btn prev" onclick="moveSlide(-1)">&#8249;</button>
-          <!-- Tombol NEXT — absolute kanan -->
           <button class="nav-btn next" onclick="moveSlide(1)">&#8250;</button>
-
           <div class="slide"><img src="img1.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
           <div class="slide"><img src="img2.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
           <div class="slide"><img src="img3.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
@@ -715,7 +563,6 @@ html,body{
 
   <div class="glow-line" style="margin-top:8px"></div>
 
-  <!-- PHOTO CARDS SECTION -->
   <div class="photo-section">
     <h2>Choose your gift!</h2>
     <div class="photo-grid">
@@ -788,7 +635,7 @@ function login(){
   const pw=document.getElementById('pw').value;
   const err=document.getElementById('pw-err');
   const box=document.querySelector('#pg-login .glass');
-  if(pw==='12345'){
+  if(pw==='261504'){
     err.textContent='';
     goTo('pg-game');
     initGame();
@@ -828,7 +675,7 @@ function flipCard(w,em){
     gMatched++;
     gFirst.w.dataset.ok='1';gSecond.w.dataset.ok='1';
     gFirst.w.classList.add('matched');gSecond.w.classList.add('matched');
-    showCin('Match! i love you');
+    showCin('Match! I Love You ♡');
     gFirst=null;gSecond=null;gLock=false;
     if(gMatched===5) setTimeout(()=>document.getElementById('win-pop').classList.add('on'),700);
   } else {
@@ -877,24 +724,18 @@ function openEnv(){
 }
 function envNext(){goTo('pg-q');initReasons()}
 
-/* PAGE 4 — QUESTION (FIXED NO BUTTON) */
+/* PAGE 4 — QUESTION */
 const noMsgs=['Please do not do it... 🥺','Pikir lagi…','Are you sure?','Please ','Jangan 💔','Pilih Yes! 💙'];
 let noCount=0;
 function pressNo(){
   const btn=document.getElementById('no-btn');
   const hint=document.getElementById('no-hint');
-
-  /* Hanya shake animasi — tombol TIDAK bergerak dari tempatnya */
   btn.classList.remove('shake-no');
-  void btn.offsetWidth; /* reflow untuk restart animasi */
+  void btn.offsetWidth;
   btn.classList.add('shake-no');
-
-  /* Bubble hint berubah teks */
   hint.textContent=noMsgs[noCount%noMsgs.length];
   hint.classList.add('on');
   noCount++;
-
-  /* Hapus kelas shake setelah selesai */
   setTimeout(()=>{
     btn.classList.remove('shake-no');
     hint.classList.remove('on');
@@ -1045,7 +886,6 @@ let memInited=false,slideIdx=0,slides=[];
 
 function initMem(){
   if(memInited) return;memInited=true;
-
   const hero=document.getElementById('hero-sec');
   const sp=document.getElementById('spotlight');
   hero.addEventListener('mousemove',e=>{
@@ -1058,7 +898,6 @@ function initMem(){
     sp.style.setProperty('--sx',(t.clientX-r.left)+'px');
     sp.style.setProperty('--sy',(t.clientY-r.top)+'px');
   },{passive:true});
-
   slides=document.querySelectorAll('#sw .slide');
   updateSlider();
 }
@@ -1097,7 +936,7 @@ document.getElementById('photo-popup').addEventListener('click',function(e){
   if(e.target===this) closePhotoPopup();
 });
 
-/* BLOCK HORIZONTAL SWIPE — hanya scroll vertikal yang boleh */
+/* BLOCK HORIZONTAL SWIPE */
 (function(){
   let startX=0,startY=0;
   document.addEventListener('touchstart',e=>{
@@ -1111,17 +950,14 @@ document.getElementById('photo-popup').addEventListener('click',function(e){
   },{passive:false});
 })();
 
-/* AUTOPLAY MUSIK — jalan otomatis, looping */
-(function(){
+/* TAP TO BEGIN + MUSIK */
+function startExperience(){
   const audio=document.getElementById('bg-music');
-  function play(){audio.play().catch(()=>{});}
-  /* Coba langsung */
-  play();
-  /* Fallback: tunggu interaksi pertama user (browser policy) */
-  function onInteract(){play();document.removeEventListener('touchstart',onInteract);document.removeEventListener('click',onInteract);}
-  document.addEventListener('touchstart',onInteract,{once:true});
-  document.addEventListener('click',onInteract,{once:true});
-})();
+  const intro=document.getElementById('intro');
+  audio.play().catch(()=>{});
+  intro.classList.add('fade');
+  setTimeout(()=>{intro.style.display='none';},900);
+}
 </script>
 </body>
 </html>

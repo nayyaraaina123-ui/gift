@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>For You 💙</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --blue:#3b82f6;
+  --blue2:#60a5fa;
+  --blue3:#93c5fd;
+  --dark:#04101e;
+  --dark2:#071526;
+  --glass:rgba(96,165,250,0.07);
+  --gb:rgba(147,197,253,0.16);
+}
+
+html,body{
+  min-height:100vh;
+  font-family:'Segoe UI',Arial,sans-serif;
+  background:var(--dark);
+  color:#fff;
+  overflow-x:hidden;
+  touch-action:pan-y; /* hanya scroll vertikal, swipe horizontal diblokir */
+}
+
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#stars span{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.7;transform:scale(1.6)}}
+
+.page{
+  display:none;min-height:100vh;
+  flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;background:var(--dark);
+  animation:fadeIn .5s ease;
+}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+.glass{
+  background:var(--glass);
+  border:1px solid var(--gb);
+  backdrop-filter:blur(20px);
+  border-radius:24px;
+  padding:32px 28px;
+  width:100%;max-width:360px;
+  text-align:center;
+  position:relative;z-index:1;
+}
+
+.btn{
+  display:inline-block;padding:13px 24px;
+  border-radius:50px;border:1px solid var(--gb);
+  background:var(--glass);color:#fff;
+  font-size:15px;font-weight:600;cursor:pointer;
+  transition:.25s;width:100%;margin-top:10px;
+}
+.btn:hover{background:rgba(147,197,253,.15);transform:translateY(-2px)}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:linear-gradient(135deg,#1d4ed8,#3b82f6);border:none}
+.btn-sky{background:linear-gradient(135deg,#0284c7,#38bdf8);border:none}
+.btn-green{background:linear-gradient(135deg,#15803d,#22c55e);border:none}
+.btn-red{background:linear-gradient(135deg,#b91c1c,#ef4444);border:none}
+
+.inp{
+  width:100%;padding:13px 16px;
+  background:rgba(96,165,250,.1);
+  border:1px solid var(--gb);
+  border-radius:14px;color:#fff;font-size:15px;outline:none;
+  margin-top:14px;transition:.2s;
+}
+.inp:focus{border-color:var(--blue2)}
+.inp::placeholder{color:rgba(255,255,255,.35)}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.shake{animation:shake .35s ease}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.float{animation:float 3s ease-in-out infinite}
+
+/* dots dihapus */
+#dots{display:none}
+
+/* PAGE 1 */
+#pg-login h2{font-size:1.6rem;margin-bottom:4px}
+#pg-login p{color:rgba(255,255,255,.5);font-size:13px}
+.err{color:#f87171;font-size:13px;margin-top:8px;min-height:18px}
+
+/* PAGE 2 */
+#pg-game{background:var(--dark2)}
+#pg-game h1{font-size:1.3rem;margin-bottom:4px;z-index:1;position:relative}
+#moves-disp{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:16px;z-index:1;position:relative}
+
+.game-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:12px;width:100%;max-width:300px;
+  z-index:1;position:relative;
+}
+.cw{aspect-ratio:1;perspective:900px;cursor:pointer}
+.ci{width:100%;height:100%;transform-style:preserve-3d;transition:.5s;position:relative}
+.cw.flip .ci{transform:rotateY(180deg)}
+.cf{
+  position:absolute;inset:0;border-radius:16px;
+  backface-visibility:hidden;
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;border:1px solid var(--gb);
+}
+.cf-front{background:linear-gradient(135deg,#071526,#0d2e55)}
+.cf-back{transform:rotateY(180deg);background:linear-gradient(135deg,#1e40af,#3b82f6)}
+.cw.matched .cf-back{background:linear-gradient(135deg,#1d4ed8,#60a5fa);box-shadow:0 0 18px rgba(96,165,250,.45)}
+
+#cin{
+  position:fixed;inset:0;background:rgba(4,16,30,.95);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;z-index:9999;transition:.4s;
+}
+#cin.on{opacity:1}
+#cin span{font-size:1.4rem;letter-spacing:3px;color:#93c5fd;opacity:0;transition:.5s}
+#cin.on span{opacity:1}
+
+.pop{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(14px);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.pop.on{display:flex;animation:fadeIn .3s ease}
+.pop-box{
+  background:linear-gradient(160deg,#071526,#0e2f58);
+  border:1px solid var(--gb);border-radius:24px;
+  padding:28px 24px;width:100%;max-width:280px;text-align:center;
+}
+.pop-box h2{font-size:1.35rem;margin-bottom:8px}
+.pop-box p{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:14px}
+
+/* PAGE 3 */
+#pg-env{
+  background:linear-gradient(135deg,#04101e,#071e3d);
+  cursor:pointer;overflow:hidden;
+}
+
+.envelope{
+  position:relative;width:300px;height:200px;
+  background:#071e3d;border-radius:12px;cursor:pointer;overflow:hidden;
+  animation:floatE 3s ease-in-out infinite;
+  border:1px solid var(--gb);
+}
+@keyframes floatE{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.flap{
+  position:absolute;width:100%;height:100%;
+  background:linear-gradient(160deg,#0d2e55,#1e3f6e);
+  clip-path:polygon(0 0,100% 0,50% 50%);
+  transform-origin:top;transition:.6s;z-index:3;
+}
+.letter{
+  position:absolute;
+  width:65%;height:90px;
+  background:linear-gradient(135deg,#dbeafe,#bfdbfe);
+  top:80%;left:50%;
+  transform:translate(-50%,95%) scale(.9);
+  border-radius:8px;transition:.6s ease;z-index:2;
+  box-shadow:0 6px 15px rgba(0,0,0,.3);
+  animation:floatL 3s ease-in-out infinite;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:#1e3a8a;
+}
+
+.letter.fullLetter{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:55vw;
+  max-width:340px;
+  height:70vh;
+  border-radius:18px;
+  background:linear-gradient(135deg,#dbeafe,#bfdbfe);
+  box-shadow:0 25px 60px rgba(0,0,0,.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:64px;
+  color:#1e3a8a;
+  animation:floatFull 4s ease-in-out infinite;
+}
+
+@keyframes floatL{
+  0%{transform:translate(-50%,95%) rotate(0deg)}
+  50%{transform:translate(-50%,93%) rotate(1deg)}
+  100%{transform:translate(-50%,95%) rotate(0deg)}
+}
+@keyframes shakeE{
+  0%{transform:rotate(0deg)}20%{transform:rotate(-3deg)}
+  40%{transform:rotate(3deg)}60%{transform:rotate(-2deg)}
+  80%{transform:rotate(2deg)}100%{transform:rotate(0deg)}
+}
+.shakeEnv{animation:shakeE .5s ease}
+.envelope.open .flap{transform:rotateX(180deg)}
+
+@keyframes slideOut{
+  0%{transform:translate(-50%,20%) scale(.9);opacity:.5}
+  50%{transform:translate(-50%,-30%) scale(1.05)}
+  100%{transform:translate(-50%,-70%) scale(1);opacity:1}
+}
+.slideOut{animation:slideOut .6s ease forwards}
+
+@keyframes floatFull{
+  0%{transform:translate(-50%,-50%) rotate(0deg)}
+  50%{transform:translate(-50%,-52%) rotate(1deg)}
+  100%{transform:translate(-50%,-50%) rotate(0deg)}
+}
+
+.next-btn{
+  position:absolute;bottom:16px;right:16px;
+  padding:10px 18px;border:none;border-radius:20px;
+  background:rgba(30,64,175,.85);color:#fff;
+  cursor:pointer;font-size:14px;font-weight:600;
+  opacity:0;pointer-events:none;transition:.5s;
+}
+.next-btn.show{opacity:1;pointer-events:auto}
+#env-hint{margin-top:20px;font-size:13px;color:rgba(255,255,255,.45);z-index:1;position:relative}
+
+@media(max-width:600px){
+  .letter.fullLetter{width:82vw !important;height:52vh !important}
+}
+
+/* ─────────────────────────────────────
+   PAGE 4 — QUESTION (FIXED NO BUTTON)
+───────────────────────────────────── */
+#pg-q h1{
+  font-size:1.4rem;text-align:center;line-height:1.55;
+  margin-bottom:36px;z-index:1;position:relative;
+  animation:float 3s ease-in-out infinite;
+}
+
+/* Container tombol — lebar tetap, tidak berubah */
+.qbtns{
+  display:flex;
+  gap:16px;
+  z-index:1;
+  position:relative;
+  width:100%;
+  max-width:200px;
+}
+
+/* Wrapper kanan — posisi relative, overflow visible */
+.no-wrapper{
+  position:relative;
+  width:50%;
+  /* tidak boleh ada transform atau margin yang berubah */
+}
+
+/* Hint bubble muncul di atas wrapper, bukan di atas btn */
+.hint-bubble{
+  position:absolute;
+  top:-44px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(96,165,250,.12);
+  border:1px solid var(--gb);
+  padding:6px 13px;
+  border-radius:10px;
+  font-size:10px;
+  white-space:nowrap;
+  opacity:0;
+  transition:.4s;
+  pointer-events:none;
+}
+.hint-bubble.on{opacity:1}
+
+/* Tombol No — DIAM di tempat, hanya shake visual */
+#no-btn{
+  width:100%;
+  /* Tidak ada transform yang menggeser posisi */
+}
+#no-btn.shake-no{
+  animation:shakeNo .4s ease;
+}
+@keyframes shakeNo{
+  0%,100%{transform:none}
+  20%{transform:rotate(-4deg)}
+  40%{transform:rotate(4deg)}
+  60%{transform:rotate(-3deg)}
+  80%{transform:rotate(3deg)}
+}
+
+/* PAGE 5 */
+#pg-reasons{
+  display:none;min-height:100vh;
+  flex-direction:column;align-items:center;
+  padding:0 0 60px;background:var(--dark);
+}
+#pg-reasons.active{display:flex}
+.r-header{
+  position:sticky;top:0;z-index:10;width:100%;
+  padding:10px 16px 8px;
+  background:rgba(4,16,30,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--gb);
+}
+.r-track{width:100%;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.r-bar{height:5px;background:var(--blue2);border-radius:3px;width:0;transition:.3s}
+.r-title{font-size:1.2rem;text-align:center;padding:20px 16px 8px}
+.r-list{width:100%;max-width:480px;padding:0 14px}
+.r-item{
+  padding:12px 14px;margin:8px 0;border-radius:14px;
+  border:1px solid var(--gb);background:var(--glass);
+  font-size:14px;line-height:1.55;
+  opacity:0;transform:translateY(16px);transition:.45s;
+}
+.r-item.vis{opacity:1;transform:none}
+.ending{
+  position:fixed;inset:0;background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;text-align:center;
+  opacity:0;pointer-events:none;transition:1s;z-index:100;
+}
+.ending.on{opacity:1;pointer-events:all}
+#type-txt{font-size:1.15rem;max-width:300px;line-height:1.65}
+
+/* ─────────────────────────────────────
+   PAGE 6 — MEMORIES (FIXED SLIDER NAV)
+───────────────────────────────────── */
+#pg-mem{
+  display:none;min-height:100vh;
+  flex-direction:column;align-items:center;
+  padding:0;background:var(--dark2);overflow-y:auto;
+}
+#pg-mem.active{display:flex}
+
+.mem-hdr{width:100%;text-align:center;padding:20px 16px 8px;position:relative;z-index:20}
+.mem-hdr h1{font-size:1.3rem;margin-bottom:4px}
+.mem-hdr p{font-size:12px;color:rgba(255,255,255,.4)}
+
+.hero-section{
+  position:relative;width:100%;
+  display:flex;justify-content:center;align-items:center;
+  padding:20px 0 32px;
+}
+.frame{
+  display:flex;gap:14px;padding:18px;
+  border-radius:18px;border:1px solid var(--gb);
+  background:rgba(96,165,250,.04);
+  position:relative;z-index:2;
+}
+.mem-card{
+  width:130px;height:175px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--gb);background:#0d2240;
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+}
+.mem-card img{width:100%;height:100%;object-fit:cover}
+.spotlight{
+  position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(
+    circle at var(--sx,50%) var(--sy,50%),
+    transparent 0px,
+    transparent 0px,
+    rgba(4,16,30,.92) 110px
+  );
+}
+
+.glow-line{
+  width:100%;height:1.5px;
+  background:linear-gradient(90deg,transparent,var(--blue),transparent);
+  box-shadow:0 0 12px var(--blue);
+}
+
+/* ── SLIDER: nav selalu di kiri-kanan kartu, tidak kemana-mana ── */
+.slider-section{
+  width:100%;
+  padding:28px 0 20px;
+  text-align:center;
+  perspective:1000px;
+}
+.slider-section h2{font-size:1rem;margin-bottom:20px;color:#fff}
+
+/* Container utama slider */
+.slider-container{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0; /* gap diatur lewat padding wrapper */
+}
+
+/* Wrapper kartu — ukuran tetap */
+.slider-wrapper{
+  position:relative;
+  /* lebar kartu ditentukan di sini, nav nempel di sisi ini */
+  width:200px;
+  height:280px;
+  flex-shrink:0;
+}
+
+/* Tombol nav — absolute terhadap slider-wrapper */
+.nav-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:10;
+  background:rgba(30,64,175,.6);
+  color:#93c5fd;
+  border:1px solid var(--gb);
+  font-size:22px;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.2s;
+  /* Keluar sedikit dari wrapper ke kiri/kanan */
+  margin:0;
+}
+.nav-btn:hover{background:rgba(30,64,175,.9)}
+.nav-btn.prev{
+  left:-44px; /* di luar wrapper, sisi kiri */
+}
+.nav-btn.next{
+  right:-44px; /* di luar wrapper, sisi kanan */
+}
+
+/* Pada layar kecil — pastikan ada ruang untuk tombol */
+@media(max-width:400px){
+  .slider-wrapper{width:160px;height:240px}
+  .nav-btn.prev{left:-38px}
+  .nav-btn.next{right:-38px}
+}
+
+.slide{
+  position:absolute;top:0;left:50%;
+  transform:translateX(-50%);
+  width:100%;height:100%;
+  transition:.5s ease;opacity:0;
+}
+.slide img{width:100%;height:80%;object-fit:cover;border-radius:16px;border:1px solid var(--gb)}
+.slide-ph{
+  width:100%;height:68%;border-radius:16px;
+  background:#0d2240;border:1px solid var(--gb);
+  display:flex;align-items:center;justify-content:center;font-size:40px;
+}
+
+/* Padding pada slider-container agar tombol tidak terpotong */
+.slider-container-wrap{
+  padding:0 56px; /* beri ruang untuk tombol di luar */
+  display:flex;
+  justify-content:center;
+}
+
+@media(max-width:600px){
+  .mem-card{width:110px;height:150px}
+}
+.mem-restart{margin:0 auto 40px;display:block;max-width:240px;position:relative;z-index:5}
+
+/* ── PHOTO CARDS SECTION ── */
+.photo-section{
+  width:100%;
+  padding:32px 0 20px;
+  text-align:center;
+  position:relative;
+  z-index:5;
+}
+.photo-section h2{
+  font-size:1rem;
+  margin-bottom:20px;
+  color:#fff;
+}
+.photo-grid{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  padding:0 24px;
+}
+.photo-card{
+  width:100%;
+  max-width:320px;
+  aspect-ratio:1/1;
+  border-radius:18px;
+  border:1px solid var(--gb);
+  background:linear-gradient(135deg,#071526,#0d2e55);
+  overflow:hidden;
+  cursor:pointer;
+  position:relative;
+  transition:.3s;
+}
+.photo-card:hover{
+  transform:scale(1.02);
+  border-color:var(--blue2);
+  box-shadow:0 0 20px rgba(96,165,250,.2);
+}
+.photo-card:active{transform:scale(.98)}
+.photo-card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:.3s;
+}
+.photo-card .card-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,rgba(4,16,30,.7) 0%,transparent 50%);
+  display:flex;
+  align-items:flex-end;
+  padding:16px;
+}
+.photo-card .card-label{
+  font-size:13px;
+  color:rgba(255,255,255,.7);
+  font-weight:600;
+  letter-spacing:.5px;
+}
+.card-ph{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:8px;color:rgba(255,255,255,.3);
+  font-size:48px;
+}
+.card-ph span{font-size:13px;font-weight:500}
+
+/* ── PHOTO POPUP ── */
+#photo-popup{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,0);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  pointer-events:none;
+  transition:background .35s ease;
+}
+#photo-popup.on{
+  background:rgba(0,0,0,.92);
+  pointer-events:all;
+}
+.popup-inner{
+  position:relative;
+  max-width:340px;
+  width:100%;
+  opacity:0;
+  transform:scale(.88) translateY(20px);
+  transition:.35s cubic-bezier(.34,1.56,.64,1);
+}
+#photo-popup.on .popup-inner{
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
+.popup-img-wrap{
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid var(--gb);
+  background:#0d2240;
+  display:flex;align-items:center;justify-content:center;font-size:60px;
+}
+.popup-img-wrap img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.popup-back-btn{
+  display:block;
+  width:100%;
+  margin-top:16px;
+  padding:13px;
+  border-radius:50px;
+  border:1px solid var(--gb);
+  background:rgba(96,165,250,.12);
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.2s;
+}
+.popup-back-btn:hover{background:rgba(96,165,250,.22)}
+.popup-back-btn:active{transform:scale(.97)}
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="dots"></div>
+
+<!-- MUSIK AUTOPLAY LOOP -->
+<audio id="bg-music" loop preload="auto" style="display:none">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- PAGE 1 — LOGIN -->
+<div class="page active" id="pg-login">
+  <div class="glass float">
+    <div style="font-size:52px;margin-bottom:14px">💌</div>
+    <h2>Welcome</h2>
+    <p>Masukkan password untuk melanjutkan</p>
+    <input class="inp" type="password" id="pw" placeholder="Password..."
+           onkeydown="if(event.key==='Enter')login()">
+    <button class="btn btn-blue" onclick="login()">Masuk </button>
+    <div class="err" id="pw-err"></div>
+  </div>
+</div>
+
+<!-- PAGE 2 — MEMORY GAME -->
+<div class="page" id="pg-game">
+  <h1>Memory Game ❤︎</h1>
+  <div id="moves-disp">Sisa langkah: <b id="mv">12</b></div>
+  <div class="game-grid" id="gg"></div>
+  <div id="cin"><span id="cin-txt"> Match! I Love You ♡ </span></div>
+  <div class="pop" id="win-pop">
+    <div class="pop-box">
+      <h2>🎉 Kamu Menang!</h2>
+      <p>Semua pasangan ditemukan!</p>
+      <button class="btn btn-blue" onclick="goTo('pg-reasons');initReasons()">Lanjut ➜</button>
+    </div>
+  </div>
+  <div class="pop" id="lose-pop">
+    <div class="pop-box">
+      <h2>💔 Coba Lagi</h2>
+      <p>Langkahmu habis. Semangat!</p>
+      <button class="btn btn-red" onclick="resetGame()">Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3 — ENVELOPE -->
+<div class="page" id="pg-env">
+  <div class="envelope" id="env" onclick="openEnv()">
+    <div class="flap" id="e-flap"></div>
+    <div class="letter" id="e-letter">
+      <img src="YOUR_IMAGE.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+    </div>
+  </div>
+  <p id="env-hint">Tap untuk membuka 💌</p>
+  <button class="next-btn" id="next-btn" onclick="envNext()">Next ➜</button>
+</div>
+
+<!-- PAGE 4 — QUESTION (FIXED) -->
+<div class="page" id="pg-q">
+  <h1>Will you stay with me<br>forever? ❤︎</h1>
+  <div class="qbtns">
+    <button class="btn btn-blue" style="width:50%" onclick="goTo('pg-mem');initMem()">Yes</button>
+    <!-- Wrapper No: diam, hanya bubble yang bergerak -->
+    <div class="no-wrapper">
+      <div class="hint-bubble" id="no-hint">Jangan... 🥺</div>
+      <button class="btn" id="no-btn" onclick="pressNo()">No</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5 — 100 REASONS -->
+<div class="page" id="pg-reasons">
+  <div class="r-header">
+    <div class="r-track"><div class="r-bar" id="r-bar"></div></div>
+  </div>
+  <div class="r-title">100 Reason why i love you </div>
+  <div class="r-list" id="r-list"></div>
+  <div class="ending" id="ending">
+    <div style="font-size:52px;margin-bottom:16px">❤︎</div>
+    <div id="type-txt"></div>
+    <button class="btn btn-sky" id="go-mem"
+      style="display:none;margin-top:24px;max-width:260px"
+      onclick="goTo('pg-env')">
+      Read My Letter!
+    </button>
+  </div>
+</div>
+
+<!-- PAGE 6 — MEMORIES (FIXED SLIDER) -->
+<div class="page" id="pg-mem">
+  <div class="mem-hdr">
+    <h1>Our Memories </h1>
+    <p>Move to reveal</p>
+  </div>
+
+  <!-- HERO SPOTLIGHT -->
+  <div class="hero-section" id="hero-sec">
+    <div class="frame">
+      <div class="mem-card">
+        <img src="img1U.jpg" onerror="this.style.display='none';this.parentNode.innerHTML='📷'">
+      </div>
+      <div class="mem-card">
+        <img src="img2U.jpg" onerror="this.style.display='none';this.parentNode.innerHTML='📷'">
+      </div>
+    </div>
+    <div class="spotlight" id="spotlight"></div>
+  </div>
+
+  <div class="glow-line"></div>
+
+  <!-- 3D SLIDER — tombol prev/next SELALU nempel di sisi kartu -->
+  <div class="slider-section">
+    <h2>We keep this love in photograph</h2>
+    <div class="slider-container-wrap">
+      <div class="slider-container">
+        <!-- Wrapper relatif — tombol nav absolute di dalamnya -->
+        <div class="slider-wrapper" id="sw">
+          <!-- Tombol PREV — absolute kiri -->
+          <button class="nav-btn prev" onclick="moveSlide(-1)">&#8249;</button>
+          <!-- Tombol NEXT — absolute kanan -->
+          <button class="nav-btn next" onclick="moveSlide(1)">&#8250;</button>
+
+          <div class="slide"><img src="img1.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
+          <div class="slide"><img src="img2.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
+          <div class="slide"><img src="img3.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
+          <div class="slide"><img src="img4.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
+          <div class="slide"><img src="img5.jpg" onerror="this.outerHTML='<div class=slide-ph>📷</div>'"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="glow-line" style="margin-top:8px"></div>
+
+  <!-- PHOTO CARDS SECTION -->
+  <div class="photo-section">
+    <h2>Choose your gift!</h2>
+    <div class="photo-grid">
+
+      <div class="photo-card" onclick="openPhotoPopup('photo1.jpg','Foto 1')">
+        <img src="photo.jpg" onerror="this.style.display='none'">
+        <div class="card-overlay"><span class="card-label">Gift 1</span></div>
+      </div>
+
+      <div class="photo-card" onclick="openPhotoPopup('photo2.jpg','Foto 2')">
+        <img src="photo.jpg" onerror="this.style.display='none'">
+        <div class="card-overlay"><span class="card-label">Gift 2</span></div>
+      </div>
+
+      <div class="photo-card" onclick="openPhotoPopup('photo3.jpg','Foto 3')">
+        <img src="photo.jpg" onerror="this.style.display='none'">
+        <div class="card-overlay"><span class="card-label">Gift 3</span></div>
+      </div>
+
+      <div class="photo-card" onclick="openPhotoPopup('photo4.jpg','Foto 4')">
+        <img src="photo.jpg" onerror="this.style.display='none'">
+        <div class="card-overlay"><span class="card-label">Gift 4</span></div>
+      </div>
+
+      <div class="photo-card" onclick="openPhotoPopup('photo5.jpg','Foto 5')">
+        <img src="photo.jpg" onerror="this.style.display='none'">
+        <div class="card-overlay"><span class="card-label">Gift 5</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO POPUP -->
+<div id="photo-popup">
+  <div class="popup-inner">
+    <div class="popup-img-wrap" id="popup-img-wrap"></div>
+    <button class="popup-back-btn" onclick="closePhotoPopup()">← Kembali</button>
+  </div>
+</div>
+
+<script>
+/* STARS */
+(function(){
+  const s=document.getElementById('stars');
+  for(let i=0;i<65;i++){
+    const e=document.createElement('span');
+    const sz=Math.random()*2.5+.5;
+    e.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:-${Math.random()*6}s`;
+    s.appendChild(e);
+  }
+})();
+
+/* PAGE NAV */
+const PAGES=['pg-login','pg-game','pg-env','pg-q','pg-reasons','pg-mem'];
+const dotsEl=document.getElementById('dots');
+PAGES.forEach(()=>{const d=document.createElement('div');d.className='dot';dotsEl.appendChild(d)});
+
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  const idx=PAGES.indexOf(id);
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on',i===idx));
+}
+document.querySelectorAll('.dot')[0].classList.add('on');
+
+/* PAGE 1 — LOGIN */
+function login(){
+  const pw=document.getElementById('pw').value;
+  const err=document.getElementById('pw-err');
+  const box=document.querySelector('#pg-login .glass');
+  if(pw==='12345'){
+    err.textContent='';
+    goTo('pg-game');
+    initGame();
+  } else {
+    err.textContent='Password salah! Coba lagi.';
+    box.classList.remove('shake');void box.offsetWidth;box.classList.add('shake');
+    document.getElementById('pw').value='';
+  }
+}
+
+/* PAGE 2 — MEMORY GAME */
+const IMAGES=['img1.jpg','img2.jpg','img3.jpg','img4.jpg','img5.jpg'];
+let gFirst=null,gSecond=null,gLock=false,gMoves=12,gMatched=0;
+
+function initGame(){
+  const pairs=[...IMAGES,...IMAGES].sort(()=>Math.random()-.5);
+  const grid=document.getElementById('gg');
+  grid.innerHTML='';
+  gFirst=null;gSecond=null;gLock=false;gMoves=12;gMatched=0;
+  document.getElementById('mv').textContent=12;
+  pairs.forEach(em=>{
+    const w=document.createElement('div');w.className='cw';
+    w.innerHTML=`<div class="ci"><div class="cf cf-front"></div><div class="cf cf-back"><img src="${em}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;"></div></div>`;
+    w.dataset.em=em;
+    w.addEventListener('click',()=>flipCard(w,em));
+    grid.appendChild(w);
+  });
+}
+
+function flipCard(w,em){
+  if(gLock||w.classList.contains('flip')||w.dataset.ok) return;
+  w.classList.add('flip');
+  if(!gFirst){gFirst={w,em};return;}
+  gSecond={w,em};gLock=true;
+  gMoves--;document.getElementById('mv').textContent=gMoves;
+  if(gFirst.em===gSecond.em){
+    gMatched++;
+    gFirst.w.dataset.ok='1';gSecond.w.dataset.ok='1';
+    gFirst.w.classList.add('matched');gSecond.w.classList.add('matched');
+    showCin('Match! i love you');
+    gFirst=null;gSecond=null;gLock=false;
+    if(gMatched===5) setTimeout(()=>document.getElementById('win-pop').classList.add('on'),700);
+  } else {
+    const a=gFirst.w,b=gSecond.w;
+    setTimeout(()=>{a.classList.remove('flip');b.classList.remove('flip');gFirst=null;gSecond=null;gLock=false;},750);
+  }
+  if(gMoves===0&&gMatched<5) setTimeout(()=>document.getElementById('lose-pop').classList.add('on'),600);
+}
+
+function showCin(txt){
+  const el=document.getElementById('cin'),tx=document.getElementById('cin-txt');
+  tx.textContent=txt;el.classList.add('on');
+  setTimeout(()=>{tx.style.opacity='0'},1100);
+  setTimeout(()=>{el.classList.remove('on');tx.style.opacity='1'},1700);
+}
+
+function resetGame(){
+  document.getElementById('lose-pop').classList.remove('on');
+  initGame();
+}
+
+/* PAGE 3 — ENVELOPE */
+let envDone=false;
+function openEnv(){
+  if(envDone) return;
+  envDone=true;
+  const env=document.getElementById('env');
+  const letter=document.getElementById('e-letter');
+  const nextBtn=document.getElementById('next-btn');
+  env.classList.add('shakeEnv');
+  setTimeout(()=>{
+    env.classList.add('open');
+    letter.classList.add('slideOut');
+  },400);
+  setTimeout(()=>{
+    letter.classList.add('fullLetter');
+    letter.style.top='50%';
+    letter.style.left='50%';
+    letter.style.transform='translate(-50%,-50%)';
+    letter.style.width='55vw';
+    letter.style.height='70vh';
+    letter.style.position='fixed';
+    letter.style.zIndex='9990';
+    nextBtn.classList.add('show');
+  },1000);
+}
+function envNext(){goTo('pg-q');initReasons()}
+
+/* PAGE 4 — QUESTION (FIXED NO BUTTON) */
+const noMsgs=['Please do not do it... 🥺','Pikir lagi…','Are you sure?','Please ','Jangan 💔','Pilih Yes! 💙'];
+let noCount=0;
+function pressNo(){
+  const btn=document.getElementById('no-btn');
+  const hint=document.getElementById('no-hint');
+
+  /* Hanya shake animasi — tombol TIDAK bergerak dari tempatnya */
+  btn.classList.remove('shake-no');
+  void btn.offsetWidth; /* reflow untuk restart animasi */
+  btn.classList.add('shake-no');
+
+  /* Bubble hint berubah teks */
+  hint.textContent=noMsgs[noCount%noMsgs.length];
+  hint.classList.add('on');
+  noCount++;
+
+  /* Hapus kelas shake setelah selesai */
+  setTimeout(()=>{
+    btn.classList.remove('shake-no');
+    hint.classList.remove('on');
+  },1400);
+}
+
+/* PAGE 5 — 100 REASONS */
+const REASONS=[
+"Because your smile feels like home",
+"Because you understand me even when I'm silent",
+"Because you remember the little things about me",
+"Because you care in a way no one else does",
+"Because you make me feel safe",
+"Because your laughter is my favorite sound",
+"Because you're always honest with me",
+"Because you stay even when things get hard",
+"Because you believe in me when I don't",
+"Because you're patient with my flaws",
+"Because you make ordinary days feel special",
+"Because you listen without judging me",
+"Because you always try to understand me",
+"Because you respect me",
+"Because you trust me",
+"Because you never give up on us",
+"Because you make me feel appreciated",
+"Because you make me feel seen",
+"Because you make me feel heard",
+"Because you always check on me",
+"Because you calm my restless mind",
+"Because you bring peace to my chaos",
+"Because you know how to comfort me",
+"Because you're gentle even when you're upset",
+"Because you never make me feel alone",
+"Because you always come back to me",
+"Because you choose me every day",
+"Because you make me feel important",
+"Because you understand my moods",
+"Because you never force me to be someone else",
+"Because you love me as I am",
+"Because you accept all my imperfections",
+"Because you never make me feel too much",
+"Because you always support my dreams",
+"Because you push me to be better",
+"Because you inspire me",
+"Because you motivate me",
+"Because you make me believe in myself",
+"Because you see the potential in me",
+"Because you never doubt me",
+"Because you make me laugh at silly things",
+"Because you make me smile effortlessly",
+"Because you instantly brighten my day",
+"Because you make everything feel lighter",
+"Because you bring happiness into my life",
+"Because you make sadness feel temporary",
+"Because you help me forget my worries",
+"Because you make me feel alive",
+"Because you give meaning to my days",
+"Because you make life feel enjoyable",
+"Because you are my shelter",
+"Because you are my safe place",
+"Because you are my peace",
+"Because you are my happiness",
+"Because you are my favorite person",
+"Because you are my best friend",
+"Because you are my home",
+"Because you are my calm",
+"Because you are my support system",
+"Because you are everything to me",
+"Because you hold my hand when I need it",
+"Because your hug makes everything feel okay",
+"Because you care about my feelings",
+"Because you protect my heart",
+"Because you never hurt me intentionally",
+"Because you always try to fix things",
+"Because you never ignore me",
+"Because you're always there for me",
+"Because you make me feel loved every day",
+"Because you love me sincerely",
+"Because you're gentle with me",
+"Because you're kind to my heart",
+"Because you treat me with kindness",
+"Because you never belittle me",
+"Because you value me",
+"Because you see me as someone precious",
+"Because you make me feel lucky",
+"Because you make me feel chosen",
+"Because you make me feel special",
+"Because you make me feel enough",
+"Because you understand my fears",
+"Because you stay even when it's not easy",
+"Because you don't just walk away",
+"Because you're strong for both of us",
+"Because you're honest with me",
+"Because you never pretend",
+"Because you stay true to yourself",
+"Because you are genuine",
+"Because you are rare",
+"Because you are one of a kind",
+"Because you make love feel simple",
+"Because you make love feel safe",
+"Because you make love feel real",
+"Because you make me believe in love again",
+"Because loving you feels natural",
+"Because loving you feels right",
+"Because I can't imagine life without you",
+"Because I choose you every day",
+"Because I will always choose you",
+"Because you are you 💙"
+];
+
+let rInited=false,endDone=false;
+function initReasons(){
+  if(rInited) return;rInited=true;
+  const list=document.getElementById('r-list');
+  REASONS.forEach((r,i)=>{
+    const d=document.createElement('div');d.className='r-item';
+    d.innerHTML=`<b>${i+1}.</b> ${r}`;list.appendChild(d);
+  });
+  window.addEventListener('scroll',onRScroll);
+  setTimeout(onRScroll,100);
+}
+
+function onRScroll(){
+  if(!document.getElementById('pg-reasons').classList.contains('active')) return;
+  document.querySelectorAll('.r-item').forEach(el=>{
+    if(el.getBoundingClientRect().top<window.innerHeight-40) el.classList.add('vis');
+  });
+  const scrolled=window.scrollY||document.documentElement.scrollTop;
+  const total=document.body.scrollHeight-window.innerHeight;
+  const pct=total>0?Math.min(100,(scrolled/total)*100):0;
+  document.getElementById('r-bar').style.width=pct+'%';
+  if(pct>92) triggerEnding();
+}
+
+function triggerEnding(){
+  if(endDone) return;endDone=true;
+  const es=document.getElementById('ending');es.classList.add('on');
+  const txt='And after all these reasons… I still choose you. Always ‹𝟹';
+  let i=0;const el=document.getElementById('type-txt');
+  (function type(){
+    if(i<txt.length){el.innerHTML+=txt[i];i++;setTimeout(type,40);}
+    else document.getElementById('go-mem').style.display='block';
+  })();
+}
+
+/* PAGE 6 — MEMORIES */
+let memInited=false,slideIdx=0,slides=[];
+
+function initMem(){
+  if(memInited) return;memInited=true;
+
+  const hero=document.getElementById('hero-sec');
+  const sp=document.getElementById('spotlight');
+  hero.addEventListener('mousemove',e=>{
+    const r=hero.getBoundingClientRect();
+    sp.style.setProperty('--sx',(e.clientX-r.left)+'px');
+    sp.style.setProperty('--sy',(e.clientY-r.top)+'px');
+  });
+  hero.addEventListener('touchmove',e=>{
+    const t=e.touches[0],r=hero.getBoundingClientRect();
+    sp.style.setProperty('--sx',(t.clientX-r.left)+'px');
+    sp.style.setProperty('--sy',(t.clientY-r.top)+'px');
+  },{passive:true});
+
+  slides=document.querySelectorAll('#sw .slide');
+  updateSlider();
+}
+
+function updateSlider(){
+  slides.forEach((sl,i)=>{
+    let off=i-slideIdx;
+    if(off>slides.length/2) off-=slides.length;
+    if(off<-slides.length/2) off+=slides.length;
+    if(off===0){sl.style.transform='translateX(-50%) scale(1)';sl.style.zIndex=3;sl.style.opacity=1;}
+    else if(off===1){sl.style.transform='translateX(60%) scale(.8) rotateY(-25deg)';sl.style.zIndex=2;sl.style.opacity=.55;}
+    else if(off===-1){sl.style.transform='translateX(-160%) scale(.8) rotateY(25deg)';sl.style.zIndex=2;sl.style.opacity=.55;}
+    else{sl.style.transform='translateX(-50%) scale(.5)';sl.style.zIndex=1;sl.style.opacity=0;}
+  });
+}
+
+function moveSlide(dir){
+  slideIdx=(slideIdx+dir+slides.length)%slides.length;
+  updateSlider();
+}
+
+/* PHOTO POPUP */
+function openPhotoPopup(src,label){
+  const popup=document.getElementById('photo-popup');
+  const wrap=document.getElementById('popup-img-wrap');
+  wrap.innerHTML=`<img src="${src}" alt="${label}">`;
+  popup.classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closePhotoPopup(){
+  const popup=document.getElementById('photo-popup');
+  popup.classList.remove('on');
+  document.body.style.overflow='';
+}
+document.getElementById('photo-popup').addEventListener('click',function(e){
+  if(e.target===this) closePhotoPopup();
+});
+
+/* BLOCK HORIZONTAL SWIPE — hanya scroll vertikal yang boleh */
+(function(){
+  let startX=0,startY=0;
+  document.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+  },{passive:true});
+  document.addEventListener('touchmove',e=>{
+    const dx=Math.abs(e.touches[0].clientX-startX);
+    const dy=Math.abs(e.touches[0].clientY-startY);
+    if(dx>dy&&dx>8) e.preventDefault();
+  },{passive:false});
+})();
+
+/* AUTOPLAY MUSIK — jalan otomatis, looping */
+(function(){
+  const audio=document.getElementById('bg-music');
+  function play(){audio.play().catch(()=>{});}
+  /* Coba langsung */
+  play();
+  /* Fallback: tunggu interaksi pertama user (browser policy) */
+  function onInteract(){play();document.removeEventListener('touchstart',onInteract);document.removeEventListener('click',onInteract);}
+  document.addEventListener('touchstart',onInteract,{once:true});
+  document.addEventListener('click',onInteract,{once:true});
+})();
+</script>
+</body>
+</html>
